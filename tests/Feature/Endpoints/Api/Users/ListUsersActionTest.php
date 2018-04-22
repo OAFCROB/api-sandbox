@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Endpoints\Api;
+namespace Tests\Feature\Endpoints\Api\Users;
 
 use App\User as UserModel;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
