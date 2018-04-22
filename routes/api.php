@@ -41,6 +41,14 @@ Route::group(
                         'uses' => 'GetUserAction@__invoke'
                     ]
                 );
+
+                Route::post(
+                    '/',
+                    [
+                        'as' => 'store',
+                        'uses' => 'CreateUserAction@__invoke'
+                    ]
+                );
             }
         );
     }
