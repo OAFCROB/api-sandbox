@@ -68,7 +68,7 @@ class ListUsersActionTest extends AbstractEndpointTest
         factory(UserModel::class)->create($overrides);
     }
 
-    private function assertEndpointBaseStructure(TestResponse $response)
+    protected function assertEndpointBaseStructure(TestResponse $response)
     {
         $response->assertJsonStructure([
             'data' => [
