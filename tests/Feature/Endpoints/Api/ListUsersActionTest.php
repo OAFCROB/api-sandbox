@@ -4,6 +4,7 @@ namespace Tests\Feature\Endpoints\Api;
 
 use App\User as UserModel;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\TestResponse;
 use Tests\Feature\Endpoints\AbstractEndpointTest;
 
 class ListUsersActionTest extends AbstractEndpointTest
@@ -21,19 +22,11 @@ class ListUsersActionTest extends AbstractEndpointTest
             'email' => 'jane.doe@example.co.uk',
         ]);
 
-        // Call api /api/users and check the basic api structure.
-        $response = $this->getJson($this->endpoint());
-        $response
-            ->assertStatus(200)
-            ->assertJsonStructure(
-                [
-                    'data' => [
-                        'users'
-                    ]
-                ]
-            )
-            ->assertJsonCount(2, 'data.users');
+        // Call api /api/users.
+        $response = $this->getJson($this->endpoint())->assertStatus(200);
 
+        // Check the basic api endpoint structure.
+        $this->assertEndpointBaseStructure($response);
 
         $expectedUsers = UserModel::orderBy('name', 'asc')->get();
         $users = $response->json()['data']['users'];
@@ -52,6 +45,15 @@ class ListUsersActionTest extends AbstractEndpointTest
         }
     }
 
+    public function testSuccessWithNoUsersToList()
+    {
+        // Call api /api/users and check the basic api structure.
+        $response = $this->getJson($this->endpoint())->assertStatus(200);
+
+        // Check the basic api endpoint structure.
+        $this->assertEndpointBaseStructure($response);
+    }
+
     protected function endpoint(): string
     {
         return '/api/users';
@@ -60,5 +62,14 @@ class ListUsersActionTest extends AbstractEndpointTest
     private function createUser(array $overrides = [])
     {
         factory(UserModel::class)->create($overrides);
+    }
+
+    private function assertEndpointBaseStructure(TestResponse $response)
+    {
+        $response->assertJsonStructure([
+            'data' => [
+                'users'
+            ]
+        ]);
     }
 }
