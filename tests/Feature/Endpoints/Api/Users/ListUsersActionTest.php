@@ -33,7 +33,7 @@ class ListUsersActionTest extends AbstractEndpointTest
         $this->assertEndpointBaseStructure($response);
 
         $expectedUsers = UserModel::orderBy('name', 'asc')->get();
-        $users = $response->json()['data']['users'];
+        $users = $response->json()['data'];
 
         // Check the user structure and that data is ordered as expected.
         foreach ($users as $key => $user) {
@@ -70,10 +70,6 @@ class ListUsersActionTest extends AbstractEndpointTest
 
     protected function assertEndpointBaseStructure(TestResponse $response)
     {
-        $response->assertJsonStructure([
-            'data' => [
-                'users'
-            ]
-        ]);
+        $response->assertJsonStructure(['data']);
     }
 }
