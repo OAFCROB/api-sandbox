@@ -13,6 +13,31 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
+Route::group(
+    [
+        'namespace' => 'Api',
+    ],
+    function() {
+        Route::group(
+            [
+                'prefix' => 'users',
+                'namespace' => 'Users',
+                'as' => 'users.'
+            ],
+            function () {
+                Route::get(
+                    '/',
+                    [
+                        'as' => 'index',
+                        'uses' => 'ListUsersAction@__invoke'
+                    ]
+                );
+            }
+        );
+    }
+);
+
+// @todo - Replace the auth with jwt.
+/*Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
-});
+});*/
