@@ -38,7 +38,7 @@ class GetUserAction extends AbstractEndpointTest
         // Check the basic api endpoint structure.
         $this->assertEndpointBaseStructure($response);
 
-        $user = $response->json()['data']['user'];
+        $user = $response->json()['data'];
 
         $this->assertEquals($this->userId, $user['id']);
         $this->assertEquals('John Doe', $user['name']);
@@ -67,13 +67,11 @@ class GetUserAction extends AbstractEndpointTest
     {
         $response->assertJsonStructure([
             'data' => [
-                'user' => [
-                    'id',
-                    'name',
-                    'email',
-                    'created_at',
-                    'updated_at',
-                ]
+                'id',
+                'name',
+                'email',
+                'created_at',
+                'updated_at',
             ]
         ]);
     }

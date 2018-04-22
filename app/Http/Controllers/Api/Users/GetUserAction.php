@@ -23,10 +23,6 @@ class GetUserAction extends BaseController
             404);
         }
 
-        return response()->json([
-            'data' => [
-                'user' => new UserResource($user)
-            ]
-        ]);
+        return new UserResource($user);
     }
 }
