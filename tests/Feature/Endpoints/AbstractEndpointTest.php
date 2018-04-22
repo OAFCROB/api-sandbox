@@ -12,4 +12,10 @@ abstract class AbstractEndpointTest extends TestCase
     * @return string
     **/
     abstract protected function endpoint(): string;
+
+    /**
+     * Assert the basic structure of the endpoint.
+     * @return void
+     **/
+    abstract protected function assertEndpointBaseStructure(TestResponse $response);
 }

@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 Route::group(
     [
         'namespace' => 'Api',
+        'as' => 'api.',
     ],
     function() {
         Route::group(
@@ -30,6 +31,14 @@ Route::group(
                     [
                         'as' => 'index',
                         'uses' => 'ListUsersAction@__invoke'
+                    ]
+                );
+
+                Route::get(
+                    '/{user_id}',
+                    [
+                        'as' => 'show',
+                        'uses' => 'GetUserAction@__invoke'
                     ]
                 );
             }
