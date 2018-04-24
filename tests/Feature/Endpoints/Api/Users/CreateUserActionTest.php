@@ -281,6 +281,30 @@ class GetUserActionTest extends AbstractEndpointTest
         $this->assertArrayNotHasKey($field, $response->json()['errors']);
     }
 
+    public function testEmailAlreadyExistsValidation()
+    {
+        factory(UserModel::class)->create([
+            'name' => 'John Doe',
+            'email' => 'john.doe@example.co.uk',
+        ]);
+
+        $field = 'email';
+
+        $password = str_random();
+        $payload = [
+            'name' => 'John Doe Duplicate',
+            'email' => 'john.doe@example.co.uk',
+            'password' => $password,
+            'password_confirmation' => $password
+        ];
+
+        // Call api /api/users.
+        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+
+        $this->assertValidationErrorBaseStructure($response);
+        $this->assertValidationErrorAlreadyExists($field, $response->json()['errors']);
+    }
+
     public function testSuccessfullyCreatingUser()
     {
         $password = str_random();
@@ -393,6 +417,16 @@ class GetUserActionTest extends AbstractEndpointTest
         $this->assertInternalType('array', $errors[$field]);
         $this->assertEquals(
             sprintf('The %s must be a valid email address.', $field),
+            $errors[$field][0]
+        );
+    }
+
+    private function assertValidationErrorAlreadyExists(string $field, array $errors)
+    {
+        $this->assertArrayHasKey($field, $errors);
+        $this->assertInternalType('array', $errors[$field]);
+        $this->assertEquals(
+            sprintf('The %s has already been taken.', $field),
             $errors[$field][0]
         );
     }

@@ -10,7 +10,7 @@ class CreateUserRequest extends ApiRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'max:255', 'email'], // @todo - 'email', 'unique:users'
+            'email' => ['required', 'max:255', 'email', 'unique:users'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
         ];
     }
