@@ -26,7 +26,7 @@ class GetUserActionTest extends AbstractEndpointTest
         $this->assertValidationErrorFieldRequired('name', $response->json()['errors']);
     }
 
-    public function testEmailValidationRequired()
+    /*public function testEmailValidationRequired()
     {
         $payload = [];
 
@@ -35,7 +35,7 @@ class GetUserActionTest extends AbstractEndpointTest
 
         $this->assertValidationErrorBaseStructure($response);
         $this->assertValidationErrorFieldRequired('email', $response->json()['errors']);
-    }
+    }*/
 
     public function testPasswordValidationRequired()
     {
@@ -54,49 +54,6 @@ class GetUserActionTest extends AbstractEndpointTest
 
         // Payload of an numeric value.
         $payload = ['name' => 1234];
-
-        // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
-
-        $this->assertValidationErrorBaseStructure($response);
-        $this->assertValidationErrorFieldString($field, $response->json()['errors']);
-
-        // Payload of an array.
-        $payload = [
-            $field => (array)['invalid data']
-        ];
-
-        // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
-
-        $this->assertValidationErrorBaseStructure($response);
-        $this->assertValidationErrorFieldString($field, $response->json()['errors']);
-
-        // Payload of an object.
-        $payload = [
-            $field => (object)['invalid data']
-        ];
-
-        // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
-
-        $this->assertValidationErrorBaseStructure($response);
-        $this->assertValidationErrorFieldString($field, $response->json()['errors']);
-
-        // Payload of the string.
-        $payload = [$field => 'valid string payload'];
-
-        // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload);
-        $this->assertArrayNotHasKey($field, $response->json()['errors']);
-    }
-
-    public function testEmailValidationString()
-    {
-        $field = 'email';
-
-        // Payload of an numeric value.
-        $payload = [$field => 1234];
 
         // Call api /api/users.
         $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
@@ -170,7 +127,10 @@ class GetUserActionTest extends AbstractEndpointTest
         $this->assertValidationErrorFieldString($field, $response->json()['errors']);
 
         // Payload of the string.
-        $payload = [$field => 'valid string payload'];
+        $payload = [
+            $field => 'valid string payload',
+            $field . '_confirmation' => 'valid string payload',
+        ];
 
         // Call api /api/users.
         $response = $this->postJson($this->endpoint(), $payload);
@@ -204,8 +164,12 @@ class GetUserActionTest extends AbstractEndpointTest
         $field = 'email';
         $maxLength = 255;
 
+        // Email structure to satisfy the RFC 822 email lengths.
+        $emailComponent = '.' . str_repeat('a', 64);
+        $emailPayload = $emailComponent . $emailComponent . '@' . $emailComponent . $emailComponent;
+
         // Payload of an numeric value.
-        $payload = [$field => str_random($maxLength + 1)];
+        $payload = [$field => $emailPayload];
 
         // Call api /api/users.
         $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
@@ -213,11 +177,12 @@ class GetUserActionTest extends AbstractEndpointTest
         $this->assertValidationErrorBaseStructure($response);
         $this->assertValidationErrorFieldMaxLength($field, $maxLength, $response->json()['errors']);
 
-        // Payload of the max length.
-        $payload = [$field => str_random($maxLength)];
+        // Payload below the max length.
+        $payload = [$field =>  'below-max-length@test.com'];
 
         // Call api /api/users.
         $response = $this->postJson($this->endpoint(), $payload);
+
         $this->assertArrayNotHasKey($field, $response->json()['errors']);
     }
 
@@ -236,7 +201,11 @@ class GetUserActionTest extends AbstractEndpointTest
         $this->assertValidationErrorFieldMinLength($field, $minLength, $response->json()['errors']);
 
         // Payload of the min length.
-        $payload = [$field => str_random($minLength)];
+        $password = str_random($minLength);
+        $payload = [
+            $field => $password,
+            $field . '_confirmation' => $password,
+        ];
 
         // Call api /api/users.
         $response = $this->postJson($this->endpoint(), $payload);
@@ -275,6 +244,33 @@ class GetUserActionTest extends AbstractEndpointTest
         $payload = [
             'password' => $password,
             'password_confirmation' => $password,
+        ];
+
+        // Call api /api/users.
+        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+
+        $this->assertValidationErrorBaseStructure($response);
+        $response = $this->postJson($this->endpoint(), $payload);
+        $this->assertArrayNotHasKey($field, $response->json()['errors']);
+    }
+
+    public function testEmailAddressValidation()
+    {
+        $field = 'email';
+
+        // Payload with an invalid email address.
+        $payload = [
+            'email' => 'this-is-not-an-email',
+        ];
+
+        // Call api /api/users.
+        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+
+        $this->assertValidationErrorBaseStructure($response);
+        $this->assertValidationErrorEmail($field, $response->json()['errors']);
+
+        $payload = [
+            'email' => 'this-is-a-valid-email@example.co.uk',
         ];
 
         // Call api /api/users.
@@ -387,6 +383,16 @@ class GetUserActionTest extends AbstractEndpointTest
         $this->assertInternalType('array', $errors[$field]);
         $this->assertEquals(
             sprintf('The %s confirmation does not match.', $field),
+            $errors[$field][0]
+        );
+    }
+
+    private function assertValidationErrorEmail(string $field, array $errors)
+    {
+        $this->assertArrayHasKey($field, $errors);
+        $this->assertInternalType('array', $errors[$field]);
+        $this->assertEquals(
+            sprintf('The %s must be a valid email address.', $field),
             $errors[$field][0]
         );
     }
