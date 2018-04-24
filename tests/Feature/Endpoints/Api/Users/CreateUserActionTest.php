@@ -243,6 +243,48 @@ class GetUserActionTest extends AbstractEndpointTest
         $this->assertArrayNotHasKey($field, $response->json()['errors']);
     }
 
+    public function testPasswordConfirmedValidation()
+    {
+        $field = 'password';
+
+        // Payload without a confirmed password.
+        $payload = [
+            'password' => str_random(16),
+        ];
+
+        // Call api /api/users.
+        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+
+        $this->assertValidationErrorBaseStructure($response);
+        $this->assertValidationErrorPasswordConfirmed($field, $response->json()['errors']);
+
+        // Payload with non matching confirmed password.
+        $payload = [
+            'password' => str_random(16),
+            'password_confirmation' => str_random(16),
+        ];
+
+        // Call api /api/users.
+        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+
+        $this->assertValidationErrorBaseStructure($response);
+        $this->assertValidationErrorPasswordConfirmed($field, $response->json()['errors']);
+
+        $password = str_random(16);
+        // Payload with matching confirmed password.
+        $payload = [
+            'password' => $password,
+            'password_confirmation' => $password,
+        ];
+
+        // Call api /api/users.
+        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+
+        $this->assertValidationErrorBaseStructure($response);
+        $response = $this->postJson($this->endpoint(), $payload);
+        $this->assertArrayNotHasKey($field, $response->json()['errors']);
+    }
+
     public function testSuccessfullyCreatingUser()
     {
         $password = str_random();
@@ -335,6 +377,16 @@ class GetUserActionTest extends AbstractEndpointTest
         $this->assertInternalType('array', $errors[$field]);
         $this->assertEquals(
             sprintf('The %s must be at least %d characters.', $field, $minLength),
+            $errors[$field][0]
+        );
+    }
+
+    private function assertValidationErrorPasswordConfirmed(string $field, array $errors)
+    {
+        $this->assertArrayHasKey($field, $errors);
+        $this->assertInternalType('array', $errors[$field]);
+        $this->assertEquals(
+            sprintf('The %s confirmation does not match.', $field),
             $errors[$field][0]
         );
     }
