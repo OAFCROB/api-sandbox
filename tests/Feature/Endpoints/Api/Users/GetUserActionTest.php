@@ -7,12 +7,8 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\TestResponse;
 use Tests\Feature\Endpoints\AbstractEndpointTest;
 
-class GetUserAction extends AbstractEndpointTest
+class GetUserActionTest extends AbstractEndpointTest
 {
-    private $firstUser;
-
-    private $secondUser;
-
     /**
     * @var int $userId
     **/
@@ -50,12 +46,11 @@ class GetUserAction extends AbstractEndpointTest
         $this->userId = 666;
 
         // Call api /api/users.
-        $response = $this->getJson($this->endpoint())->assertStatus(404)->
-            assertExactJson([
-                'error' => [
-                    'user' => sprintf('User [%d] not found.', $this->userId )
-                ]
-            ]);
+        $response = $this->getJson($this->endpoint())->assertStatus(404)->assertExactJson([
+            'error' => [
+                'user' => sprintf('User [%d] not found.', $this->userId )
+            ]
+        ]);
     }
 
     protected function endpoint(): string

@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\TestResponse;
 use Tests\Feature\Endpoints\AbstractEndpointTest;
 
-class GetUserActionTest extends AbstractEndpointTest
+class CreateUserActionTest extends AbstractEndpointTest
 {
     use DatabaseMigrations;
 
