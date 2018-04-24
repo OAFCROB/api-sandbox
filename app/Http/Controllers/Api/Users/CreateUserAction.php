@@ -11,6 +11,7 @@ class CreateUserAction extends BaseController
 {
     public function __invoke(CreateUserRequest $request)
     {
+        // @todo - refactor this into a service layer/use case.
         $user = new UserModel($request->all());
         $user->save();
         return new UserResource($user);
