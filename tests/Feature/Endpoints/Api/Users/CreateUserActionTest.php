@@ -12,8 +12,6 @@ class CreateUserActionTest extends AbstractEndpointTest
     use DatabaseMigrations;
 
     // @todo - Unauthorised request.
-    // @todo - Request validation on payload.
-    // @todo - Check the password field in the DB isn't plain string that's passed in.
 
     public function testNameValidationRequired()
     {
