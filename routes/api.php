@@ -49,6 +49,14 @@ Route::group(
                         'uses' => 'CreateUserAction@__invoke'
                     ]
                 );
+
+                Route::delete(
+                    '/{user_id}',
+                    [
+                        'as' => 'destroy',
+                        'uses' => 'DeleteUserAction@__invoke'
+                    ]
+                );
             }
         );
     }
