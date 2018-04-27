@@ -57,6 +57,14 @@ Route::group(
                         'uses' => 'DeleteUserAction@__invoke'
                     ]
                 );
+
+                Route::put(
+                    '/{user_id}',
+                    [
+                        'as' => 'update',
+                        'uses' => 'UpdateUserAction@__invoke'
+                    ]
+                );
             }
         );
     }
