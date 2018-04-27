@@ -24,7 +24,7 @@ class CreateUserActionTest extends AbstractEndpointTest
         $this->assertValidationErrorFieldRequired('name', $response->json()['errors']);
     }
 
-    /*public function testEmailValidationRequired()
+    public function testEmailValidationRequired()
     {
         $payload = [];
 
@@ -33,7 +33,7 @@ class CreateUserActionTest extends AbstractEndpointTest
 
         $this->assertValidationErrorBaseStructure($response);
         $this->assertValidationErrorFieldRequired('email', $response->json()['errors']);
-    }*/
+    }
 
     public function testPasswordValidationRequired()
     {
