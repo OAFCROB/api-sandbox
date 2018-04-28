@@ -15,6 +15,15 @@ class ListUsersActionTest extends AbstractEndpointTest
     // @todo - Paginate response
     // @todo - Filtering results i.e. email, name, created date etc.
 
+    public function testUnauthenticatedUser()
+    {
+        $authenticationHeaders = [
+            // Empty for an unauthorised attempt.
+        ];
+
+        $this->getJson($this->endpoint(), $authenticationHeaders)->assertStatus(401);
+    }
+
     public function testSuccessfullyListingOutUsers()
     {
         $this->createUser([
@@ -27,7 +36,7 @@ class ListUsersActionTest extends AbstractEndpointTest
         ]);
 
         // Call api /api/users.
-        $response = $this->getJson($this->endpoint())->assertStatus(200);
+        $response = $this->getJson($this->endpoint(), $this->authenticationHeaders())->assertStatus(200);
 
         // Check the basic api endpoint structure.
         $this->assertEndpointBaseStructure($response);
@@ -52,7 +61,7 @@ class ListUsersActionTest extends AbstractEndpointTest
     public function testSuccessWithNoUsersToList()
     {
         // Call api /api/users and check the basic api structure.
-        $response = $this->getJson($this->endpoint())->assertStatus(200);
+        $response = $this->getJson($this->endpoint(), $this->authenticationHeaders())->assertStatus(200);
 
         // Check the basic api endpoint structure.
         $this->assertEndpointBaseStructure($response);

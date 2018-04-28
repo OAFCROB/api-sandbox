@@ -23,6 +23,11 @@ class JwtAuthenticateActionTest extends AbstractEndpointTest
         $this->user = factory(UserModel::class)->create();
     }
 
+    public function testUnauthenticatedUser()
+    {
+        $this->markTestSkipped('Do not need to implement for this test.');
+    }
+
     public function testEmptyPayloadResultsInAnError()
     {
         $payload = [
@@ -95,6 +100,8 @@ class JwtAuthenticateActionTest extends AbstractEndpointTest
         $this->assertNotNull($json['data']['token']);
         $this->assertNotNull($json['data']['token_type']);
         $this->assertNotNull($json['data']['expires_in']);
+
+        $this->assertEquals('bearer', $json['data']['token_type']);
     }
 
     protected function endpoint(): string
