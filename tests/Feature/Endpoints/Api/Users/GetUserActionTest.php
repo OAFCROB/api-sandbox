@@ -16,7 +16,14 @@ class GetUserActionTest extends AbstractEndpointTest
 
     use DatabaseMigrations;
 
-    // @todo - Unauthorised request
+    public function testUnauthenticatedUser()
+    {
+        $authenticationHeaders = [
+            // Empty for an unauthorised attempt.
+        ];
+
+        $this->getJson($this->endpoint(), $authenticationHeaders)->assertStatus(401);
+    }
 
     public function testSuccessfullyGetUser()
     {
@@ -29,7 +36,7 @@ class GetUserActionTest extends AbstractEndpointTest
         ]);
 
         // Call api /api/users.
-        $response = $this->getJson($this->endpoint())->assertStatus(200);
+        $response = $this->getJson($this->endpoint(), $this->authenticationHeaders())->assertStatus(200);
 
         // Check the basic api endpoint structure.
         $this->assertEndpointBaseStructure($response);
@@ -46,11 +53,12 @@ class GetUserActionTest extends AbstractEndpointTest
         $this->userId = 666;
 
         // Call api /api/users.
-        $response = $this->getJson($this->endpoint())->assertStatus(404)->assertExactJson([
-            'error' => [
-                'user' => sprintf('User [%d] not found.', $this->userId )
-            ]
-        ]);
+        $response = $this->getJson($this->endpoint(), $this->authenticationHeaders())->assertStatus(404)
+            ->assertExactJson([
+                'error' => [
+                    'user' => sprintf('User [%d] not found.', $this->userId )
+                ]
+            ]);
     }
 
     protected function endpoint(): string
