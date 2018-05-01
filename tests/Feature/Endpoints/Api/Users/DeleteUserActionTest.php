@@ -16,9 +16,20 @@ class DeleteUserActionTest extends AbstractEndpointTest
 
     use DatabaseMigrations;
 
-    // @todo - Unauthorised request.
+    public function testUnauthenticatedUser()
+    {
+        $this->userId = 123;
 
-    public function testSuccessfullyCreatingUser()
+        $authenticationHeaders = [
+            // Empty for an unauthorised attempt.
+        ];
+
+        $payload = [];
+
+        $this->deleteJson($this->endpoint(), $payload, $authenticationHeaders)->assertStatus(401);
+    }
+
+    public function testSuccessfullyDeletingUser()
     {
         $this->userId = 123;
 
@@ -31,7 +42,7 @@ class DeleteUserActionTest extends AbstractEndpointTest
         $this->createUser($user);
 
         // Call api /api/users.
-        $response = $this->deleteJson($this->endpoint(), [])->assertStatus(200);
+        $response = $this->deleteJson($this->endpoint(), [], $this->authenticationHeaders())->assertStatus(200);
         $this->assertEndpointBaseStructure($response);
         $this->assertSoftDeleted('users', ['id' => $this->userId]);
     }
@@ -39,11 +50,12 @@ class DeleteUserActionTest extends AbstractEndpointTest
     public function testAttemptToDeleteUserWhoDoesNotExist()
     {
         $this->userId = 666;
-        $this->getJson($this->endpoint())->assertStatus(404)->assertExactJson([
-            'error' => [
-                'user' => sprintf('User [%d] not found.', $this->userId )
-            ]
-        ]);
+        $this->deleteJson($this->endpoint(), [], $this->authenticationHeaders())->assertStatus(404)
+            ->assertExactJson([
+                'error' => [
+                    'user' => sprintf('User [%d] not found.', $this->userId )
+                ]
+            ]);
     }
 
     protected function endpoint(): string

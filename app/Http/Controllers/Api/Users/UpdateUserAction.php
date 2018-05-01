@@ -9,7 +9,7 @@ use App\User as UserModel;
 
 class UpdateUserAction extends BaseController
 {
-    public function __invoke(UpdateUserRequest $request): UserResource
+    public function __invoke(UpdateUserRequest $request)
     {
         $user = UserModel::find($request->user_id);
 

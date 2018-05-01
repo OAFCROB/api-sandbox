@@ -11,14 +11,24 @@ class CreateUserActionTest extends AbstractEndpointTest
 {
     use DatabaseMigrations;
 
-    // @todo - Unauthorised request.
+    public function testUnauthenticatedUser()
+    {
+        $authenticationHeaders = [
+            // Empty for an unauthorised attempt.
+        ];
+
+        $payload = [];
+
+        $this->postJson($this->endpoint(), $payload, $authenticationHeaders)->assertStatus(401);
+    }
 
     public function testNameValidationRequired()
     {
         $payload = [];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders())
+            ->assertStatus(422);
 
         $this->assertValidationErrorBaseStructure($response);
         $this->assertValidationErrorFieldRequired('name', $response->json()['errors']);
@@ -29,7 +39,8 @@ class CreateUserActionTest extends AbstractEndpointTest
         $payload = [];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders())
+            ->assertStatus(422);
 
         $this->assertValidationErrorBaseStructure($response);
         $this->assertValidationErrorFieldRequired('email', $response->json()['errors']);
@@ -40,7 +51,8 @@ class CreateUserActionTest extends AbstractEndpointTest
         $payload = [];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders())
+            ->assertStatus(422);
 
         $this->assertValidationErrorBaseStructure($response);
         $this->assertValidationErrorFieldRequired('email', $response->json()['errors']);
@@ -54,7 +66,8 @@ class CreateUserActionTest extends AbstractEndpointTest
         $payload = ['name' => 1234];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders())
+            ->assertStatus(422);
 
         $this->assertValidationErrorBaseStructure($response);
         $this->assertValidationErrorFieldString($field, $response->json()['errors']);
@@ -65,7 +78,8 @@ class CreateUserActionTest extends AbstractEndpointTest
         ];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders())
+            ->assertStatus(422);
 
         $this->assertValidationErrorBaseStructure($response);
         $this->assertValidationErrorFieldString($field, $response->json()['errors']);
@@ -76,7 +90,8 @@ class CreateUserActionTest extends AbstractEndpointTest
         ];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders())
+            ->assertStatus(422);
 
         $this->assertValidationErrorBaseStructure($response);
         $this->assertValidationErrorFieldString($field, $response->json()['errors']);
@@ -85,7 +100,7 @@ class CreateUserActionTest extends AbstractEndpointTest
         $payload = [$field => 'valid string payload'];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders());
         $this->assertArrayNotHasKey($field, $response->json()['errors']);
     }
 
@@ -97,7 +112,8 @@ class CreateUserActionTest extends AbstractEndpointTest
         $payload = [$field => 1234];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders())
+            ->assertStatus(422);
 
         $this->assertValidationErrorBaseStructure($response);
         $this->assertValidationErrorFieldString($field, $response->json()['errors']);
@@ -108,7 +124,8 @@ class CreateUserActionTest extends AbstractEndpointTest
         ];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders())
+            ->assertStatus(422);
 
         $this->assertValidationErrorBaseStructure($response);
         $this->assertValidationErrorFieldString($field, $response->json()['errors']);
@@ -119,7 +136,8 @@ class CreateUserActionTest extends AbstractEndpointTest
         ];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders())
+            ->assertStatus(422);
 
         $this->assertValidationErrorBaseStructure($response);
         $this->assertValidationErrorFieldString($field, $response->json()['errors']);
@@ -131,7 +149,7 @@ class CreateUserActionTest extends AbstractEndpointTest
         ];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders());
         $this->assertArrayNotHasKey($field, $response->json()['errors']);
     }
 
@@ -144,7 +162,8 @@ class CreateUserActionTest extends AbstractEndpointTest
         $payload = [$field => str_random($maxLength + 1)];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders())
+            ->assertStatus(422);
 
         $this->assertValidationErrorBaseStructure($response);
         $this->assertValidationErrorFieldMaxLength($field, $maxLength, $response->json()['errors']);
@@ -153,7 +172,7 @@ class CreateUserActionTest extends AbstractEndpointTest
         $payload = [$field => str_random($maxLength)];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders());
         $this->assertArrayNotHasKey($field, $response->json()['errors']);
     }
 
@@ -170,7 +189,8 @@ class CreateUserActionTest extends AbstractEndpointTest
         $payload = [$field => $emailPayload];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders())
+            ->assertStatus(422);
 
         $this->assertValidationErrorBaseStructure($response);
         $this->assertValidationErrorFieldMaxLength($field, $maxLength, $response->json()['errors']);
@@ -179,7 +199,7 @@ class CreateUserActionTest extends AbstractEndpointTest
         $payload = [$field =>  'below-max-length@test.com'];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders());
 
         $this->assertArrayNotHasKey($field, $response->json()['errors']);
     }
@@ -193,7 +213,8 @@ class CreateUserActionTest extends AbstractEndpointTest
         $payload = [$field => str_random($minLength - 1)];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders())
+            ->assertStatus(422);
 
         $this->assertValidationErrorBaseStructure($response);
         $this->assertValidationErrorFieldMinLength($field, $minLength, $response->json()['errors']);
@@ -206,7 +227,7 @@ class CreateUserActionTest extends AbstractEndpointTest
         ];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders());
         $this->assertArrayNotHasKey($field, $response->json()['errors']);
     }
 
@@ -220,7 +241,8 @@ class CreateUserActionTest extends AbstractEndpointTest
         ];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders())
+            ->assertStatus(422);
 
         $this->assertValidationErrorBaseStructure($response);
         $this->assertValidationErrorPasswordConfirmed($field, $response->json()['errors']);
@@ -232,7 +254,8 @@ class CreateUserActionTest extends AbstractEndpointTest
         ];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders())
+            ->assertStatus(422);
 
         $this->assertValidationErrorBaseStructure($response);
         $this->assertValidationErrorPasswordConfirmed($field, $response->json()['errors']);
@@ -245,10 +268,11 @@ class CreateUserActionTest extends AbstractEndpointTest
         ];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders())
+            ->assertStatus(422);
 
         $this->assertValidationErrorBaseStructure($response);
-        $response = $this->postJson($this->endpoint(), $payload);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders());
         $this->assertArrayNotHasKey($field, $response->json()['errors']);
     }
 
@@ -262,7 +286,8 @@ class CreateUserActionTest extends AbstractEndpointTest
         ];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders())
+            ->assertStatus(422);
 
         $this->assertValidationErrorBaseStructure($response);
         $this->assertValidationErrorEmail($field, $response->json()['errors']);
@@ -272,10 +297,11 @@ class CreateUserActionTest extends AbstractEndpointTest
         ];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders())
+            ->assertStatus(422);
 
         $this->assertValidationErrorBaseStructure($response);
-        $response = $this->postJson($this->endpoint(), $payload);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders());
         $this->assertArrayNotHasKey($field, $response->json()['errors']);
     }
 
@@ -297,7 +323,8 @@ class CreateUserActionTest extends AbstractEndpointTest
         ];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(422);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders())
+            ->assertStatus(422);
 
         $this->assertValidationErrorBaseStructure($response);
         $this->assertValidationErrorAlreadyExists($field, $response->json()['errors']);
@@ -314,12 +341,13 @@ class CreateUserActionTest extends AbstractEndpointTest
         ];
 
         // Call api /api/users.
-        $response = $this->postJson($this->endpoint(), $payload)->assertStatus(201);
+        $response = $this->postJson($this->endpoint(), $payload, $this->authenticationHeaders())
+            ->assertStatus(201);
 
         $this->assertEndpointBaseStructure($response);
 
         // Check the results in the database, reflect the payload given.
-        $databaseUser = UserModel::first();
+        $databaseUser = UserModel::where('email', $payload['email'])->first();
 
         $this->assertNotNull($databaseUser);
         $this->assertEquals($payload['name'], $databaseUser->name);

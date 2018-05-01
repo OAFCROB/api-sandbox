@@ -19,11 +19,32 @@ Route::group(
         'as' => 'api.',
     ],
     function() {
+
+        Route::group(
+            [
+                'prefix' => 'auth',
+                'namespace' => 'Auth',
+                'as' => 'auth.',
+            ],
+            function () {
+                Route::post(
+                    '/',
+                    [
+                        'as' => 'index',
+                        'uses' => 'JwtAuthenticateAction@__invoke',
+                    ]
+                );
+            }
+        );
+
         Route::group(
             [
                 'prefix' => 'users',
                 'namespace' => 'Users',
-                'as' => 'users.'
+                'as' => 'users.',
+                'middleware' => [
+                    'jwt.auth'
+                ],
             ],
             function () {
                 Route::get(
