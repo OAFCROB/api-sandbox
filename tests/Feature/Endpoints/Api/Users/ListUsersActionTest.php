@@ -11,7 +11,6 @@ class ListUsersActionTest extends AbstractEndpointTest
 {
     use DatabaseMigrations;
 
-    // @todo - Unauthorised request
     // @todo - Paginate response
     // @todo - Filtering results i.e. email, name, created date etc.
 
