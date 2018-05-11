@@ -5,6 +5,7 @@ namespace Tests\Feature\Endpoints\Api;
 use App\User as UserModel;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\TestResponse;
+use Illuminate\Support\Facades\Hash;
 use Tests\Feature\Endpoints\AbstractEndpointTest;
 
 class UpdateUserActionTest extends AbstractEndpointTest
@@ -340,8 +341,8 @@ class UpdateUserActionTest extends AbstractEndpointTest
         ];
 
         // Call api /api/users.
-        $response = $this->putJson($this->endpoint(), $payload, $this->authenticationHeaders())
-            //->assertStatus(404)
+        $this->putJson($this->endpoint(), $payload, $this->authenticationHeaders())
+            ->assertStatus(404)
             ->assertExactJson([
                 'error' => [
                     'user' => sprintf('User [%d] not found.', $this->userId )
@@ -371,7 +372,7 @@ class UpdateUserActionTest extends AbstractEndpointTest
         $this->assertNotNull($databaseUser);
         $this->assertEquals($payload['name'], $databaseUser->name);
         $this->assertEquals($payload['email'], $databaseUser->email);
-        $this->assertEquals($payload['password'], $databaseUser->password);
+        $this->assertTrue(Hash::check($payload['password'], $databaseUser->password));
         $this->assertNotEquals($this->user->updated_at, $databaseUser->updated_at);
 
         $responseUser = $response->json()['data'];

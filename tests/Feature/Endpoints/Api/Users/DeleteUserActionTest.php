@@ -67,7 +67,12 @@ class DeleteUserActionTest extends AbstractEndpointTest
     {
         $response->assertJsonStructure([
             'data' => [
-                'deleted',
+                'id',
+                'name',
+                'email',
+                'created_at',
+                'updated_at',
+                'deleted_at',
             ]
         ]);
     }
