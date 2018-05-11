@@ -5,6 +5,7 @@ namespace Tests\Feature\Endpoints\Api;
 use App\User as UserModel;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\TestResponse;
+use Illuminate\Support\Facades\Hash;
 use Tests\Feature\Endpoints\AbstractEndpointTest;
 
 class CreateUserActionTest extends AbstractEndpointTest
@@ -352,7 +353,8 @@ class CreateUserActionTest extends AbstractEndpointTest
         $this->assertNotNull($databaseUser);
         $this->assertEquals($payload['name'], $databaseUser->name);
         $this->assertEquals($payload['email'], $databaseUser->email);
-        $this->assertEquals($payload['password'], $databaseUser->password);
+        $this->assertNotEquals($payload['password'], $databaseUser->password);
+        $this->assertTrue(Hash::check($payload['password'], $databaseUser->password));
 
         $responseUser = $response->json()['data'];
 
