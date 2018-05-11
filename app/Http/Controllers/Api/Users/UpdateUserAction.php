@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers\Api\Users;
 
+use App\Exceptions\UserNotFoundException;
 use App\Http\Controllers\Controller as BaseController;
 use App\Http\Requests\Api\Users\UpdateUserRequest;
-use App\Http\Resources\User as UserResource;
-use App\User as UserModel;
+use App\UseCases\Users\UpdateUser;
 
 class UpdateUserAction extends BaseController
 {
     public function __invoke(UpdateUserRequest $request)
     {
-        $user = UserModel::find($request->user_id);
-
-        if (!$user) {
+        try {
+            return (new UpdateUser($request))->execute();
+        } catch (UserNotFoundException $e) {
             return response()->json(
                 [
                     'error' => [
@@ -22,13 +22,5 @@ class UpdateUserAction extends BaseController
                 ],
                 404);
         }
-
-        $user->fill([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => $request->password,
-        ])->save();
-
-        return new UserResource($user);
     }
 }
