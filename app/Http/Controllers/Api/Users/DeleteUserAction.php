@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers\Api\Users;
 
+use App\Exceptions\UserNotFoundException;
 use App\Http\Controllers\Controller as BaseController;
-use App\User as UserModel;
+use App\UseCases\Users\DeleteUser;
 use Illuminate\Http\Request;
 
 class DeleteUserAction extends BaseController
 {
     public function __invoke(Request $request)
     {
-        $user = UserModel::find($request->user_id);
-
-        if (!$user) {
+        try {
+            return (new DeleteUser($request->user_id))->execute();
+        } catch (UserNotFoundException $e) {
             return response()->json(
                 [
                     'error' => [
