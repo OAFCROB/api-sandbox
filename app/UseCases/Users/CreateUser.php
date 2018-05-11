@@ -16,15 +16,15 @@ class CreateUser
 
     public function __construct(CreateUserRequest $request)
     {
-        $this->request = $request->all();
+        $this->request = $request;
     }
 
     public function execute(): UserResource
     {
         $user = UserModel::create([
-            'name' => $this->request['name'],
-            'email' => $this->request['email'],
-            'password' => Hash::make($this->request['password'])
+            'name' => $this->request->name,
+            'email' => $this->request->email,
+            'password' => Hash::make($this->request->password)
         ]);
 
         return new UserResource($user);
